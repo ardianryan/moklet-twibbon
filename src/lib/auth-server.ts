@@ -4,6 +4,7 @@ import db from "./db";
 export interface UserSession {
   userId: number;
   username: string;
+  role: string;
 }
 
 /**
@@ -20,7 +21,7 @@ export async function getSessionUser(): Promise<UserSession | null> {
     // Fetch session details from SQLite
     const result = await db.execute({
       sql: `
-        SELECT s.expiresAt, u.id as userId, u.username
+        SELECT s.expiresAt, u.id as userId, u.username, u.role
         FROM sessions s
         JOIN users u ON s.userId = u.id
         WHERE s.id = ?
@@ -28,7 +29,7 @@ export async function getSessionUser(): Promise<UserSession | null> {
       args: [sessionToken]
     });
     
-    const session = result.rows[0] as unknown as { expiresAt: string; userId: number; username: string } | undefined;
+    const session = result.rows[0] as unknown as { expiresAt: string; userId: number; username: string; role: string } | undefined;
 
     if (!session) return null;
 
@@ -45,6 +46,7 @@ export async function getSessionUser(): Promise<UserSession | null> {
     return {
       userId: Number(session.userId),
       username: String(session.username),
+      role: String(session.role || "user"),
     };
   } catch (error) {
     console.error("Error verifying session:", error);

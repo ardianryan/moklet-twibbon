@@ -14,7 +14,7 @@ export async function GET() {
     }
     
     let campaigns;
-    if (session.username === "admin") {
+    if (session.role === "admin") {
       const result = await db.execute("SELECT * FROM campaigns ORDER BY createdAt DESC");
       campaigns = result.rows.map((row) => ({
         id: Number(row.id),
@@ -70,8 +70,12 @@ export async function POST(req: NextRequest) {
       .trim()
       .replace(/[^a-z0-9-_]/g, "");
 
-    if (!cleanedSlug) {
-      return NextResponse.json({ error: "Invalid slug format" }, { status: 400 });
+    // Secure validation: slug length must be between 3 and 50 characters
+    if (cleanedSlug.length < 3 || cleanedSlug.length > 50) {
+      return NextResponse.json(
+        { error: "Slug must be between 3 and 50 characters long" },
+        { status: 400 }
+      );
     }
 
     // Check if slug already exists
@@ -127,7 +131,7 @@ export async function DELETE(req: NextRequest) {
     }
 
     // Verify ownership (only creator or admin can delete)
-    if (campaign.userId && Number(campaign.userId) !== session.userId && session.username !== "admin") {
+    if (campaign.userId && Number(campaign.userId) !== session.userId && session.role !== "admin") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
@@ -171,8 +175,12 @@ export async function PUT(req: NextRequest) {
       .trim()
       .replace(/[^a-z0-9-_]/g, "");
 
-    if (!cleanedSlug) {
-      return NextResponse.json({ error: "Invalid slug format" }, { status: 400 });
+    // Secure validation: slug length must be between 3 and 50 characters
+    if (cleanedSlug.length < 3 || cleanedSlug.length > 50) {
+      return NextResponse.json(
+        { error: "Slug must be between 3 and 50 characters long" },
+        { status: 400 }
+      );
     }
 
     // Fetch existing campaign
@@ -188,7 +196,7 @@ export async function PUT(req: NextRequest) {
     }
 
     // Verify ownership (only creator or admin can edit)
-    if (campaign.userId && Number(campaign.userId) !== session.userId && session.username !== "admin") {
+    if (campaign.userId && Number(campaign.userId) !== session.userId && session.role !== "admin") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
