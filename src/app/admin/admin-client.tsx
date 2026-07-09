@@ -20,6 +20,7 @@ interface Campaign {
 interface UserInfo {
   id: number;
   username: string;
+  role: string;
   createdAt: string;
 }
 
@@ -50,11 +51,13 @@ export default function AdminClient({ initialCampaigns, username }: AdminClientP
   const [usersList, setUsersList] = useState<UserInfo[]>([]);
   const [newUsername, setNewUsername] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [newUserRole, setNewUserRole] = useState("user");
 
   // Edit User Modal State
   const [editingUser, setEditingUser] = useState<UserInfo | null>(null);
   const [editUsername, setEditUsername] = useState("");
   const [editPassword, setEditPassword] = useState("");
+  const [editingUserRole, setEditingUserRole] = useState("user");
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -109,8 +112,12 @@ export default function AdminClient({ initialCampaigns, username }: AdminClientP
     }
 
     const cleanSlug = slug.toLowerCase().trim().replace(/[^a-z0-9-_]/g, "");
-    if (!cleanSlug) {
-      toast.error("Invalid slug format (lowercase, numbers, - or _ only)");
+    if (cleanSlug.length < 3) {
+      toast.error("Slug must be at least 3 characters long");
+      return;
+    }
+    if (cleanSlug.length > 50) {
+      toast.error("Slug must be 50 characters or less");
       return;
     }
 
@@ -169,8 +176,12 @@ export default function AdminClient({ initialCampaigns, username }: AdminClientP
     }
 
     const cleanSlug = editSlug.toLowerCase().trim().replace(/[^a-z0-9-_]/g, "");
-    if (!cleanSlug) {
-      toast.error("Invalid slug format");
+    if (cleanSlug.length < 3) {
+      toast.error("Slug must be at least 3 characters long");
+      return;
+    }
+    if (cleanSlug.length > 50) {
+      toast.error("Slug must be 50 characters or less");
       return;
     }
 
@@ -250,6 +261,7 @@ export default function AdminClient({ initialCampaigns, username }: AdminClientP
         body: JSON.stringify({
           username: cleanUser,
           password: newPassword,
+          role: newUserRole,
         }),
       });
 
@@ -258,6 +270,7 @@ export default function AdminClient({ initialCampaigns, username }: AdminClientP
         toast.success(`User '${cleanUser}' created successfully!`);
         setNewUsername("");
         setNewPassword("");
+        setNewUserRole("user");
         fetchUsers();
       } else {
         toast.error(data.error || "Failed to register user");
@@ -288,6 +301,7 @@ export default function AdminClient({ initialCampaigns, username }: AdminClientP
           id: editingUser.id,
           username: editUsername.trim(),
           password: editPassword || undefined,
+          role: editingUserRole,
         }),
       });
 
@@ -648,6 +662,20 @@ export default function AdminClient({ initialCampaigns, username }: AdminClientP
                   />
                 </div>
 
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-500 mb-1">
+                    User Role
+                  </label>
+                  <select
+                    value={newUserRole}
+                    onChange={(e) => setNewUserRole(e.target.value)}
+                    className="w-full px-3 py-2 border border-neutral-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white text-neutral-800"
+                  >
+                    <option value="user">User (Operator)</option>
+                    <option value="admin">Admin (Full Access)</option>
+                  </select>
+                </div>
+
                 <button
                   type="submit"
                   disabled={isLoading}
@@ -671,6 +699,7 @@ export default function AdminClient({ initialCampaigns, username }: AdminClientP
                     <tr className="bg-neutral-50 text-neutral-600 text-xs font-semibold uppercase tracking-wider">
                       <th className="px-4 py-3 text-left">ID</th>
                       <th className="px-4 py-3 text-left">Username</th>
+                      <th className="px-4 py-3 text-left">Role</th>
                       <th className="px-4 py-3 text-left">Created Date</th>
                       <th className="px-4 py-3 text-right">Actions</th>
                     </tr>
@@ -680,6 +709,15 @@ export default function AdminClient({ initialCampaigns, username }: AdminClientP
                       <tr key={user.id} className="hover:bg-neutral-50/50 transition-colors">
                         <td className="px-4 py-3 align-middle text-neutral-500">#{user.id}</td>
                         <td className="px-4 py-3 align-middle font-bold text-neutral-800">{user.username}</td>
+                        <td className="px-4 py-3 align-middle">
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                            user.role === "admin"
+                              ? "bg-purple-100 text-purple-700 border border-purple-200"
+                              : "bg-blue-100 text-blue-700 border border-blue-200"
+                          }`}>
+                            {user.role}
+                          </span>
+                        </td>
                         <td className="px-4 py-3 align-middle text-neutral-500">
                           {new Date(user.createdAt).toLocaleDateString("en-US")}
                         </td>
@@ -690,6 +728,7 @@ export default function AdminClient({ initialCampaigns, username }: AdminClientP
                                 setEditingUser(user);
                                 setEditUsername(user.username);
                                 setEditPassword("");
+                                setEditingUserRole(user.role || "user");
                               }}
                               className="inline-flex items-center gap-1 px-2.5 py-1.5 border border-neutral-200 rounded text-xs font-semibold text-neutral-600 hover:bg-neutral-50 hover:border-neutral-300 transition-colors"
                             >
@@ -859,6 +898,21 @@ export default function AdminClient({ initialCampaigns, username }: AdminClientP
                   onChange={(e) => setEditPassword(e.target.value)}
                   className="w-full px-3 py-2 border border-neutral-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white text-neutral-800"
                 />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-500 mb-1">
+                  User Role
+                </label>
+                <select
+                  value={editingUserRole}
+                  onChange={(e) => setEditingUserRole(e.target.value)}
+                  className="w-full px-3 py-2 border border-neutral-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white text-neutral-800 disabled:opacity-60"
+                  disabled={editingUser.username === username}
+                >
+                  <option value="user">User (Operator)</option>
+                  <option value="admin">Admin (Full Access)</option>
+                </select>
               </div>
 
               <div className="flex justify-end gap-3 pt-2">

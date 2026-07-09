@@ -45,6 +45,7 @@ export async function initDb() {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL,
+        role TEXT DEFAULT 'user',
         createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
       );
     `);
@@ -60,14 +61,26 @@ export async function initDb() {
 
     // Migration: Check if campaigns table already existed but lacks userId column
     try {
-      const columns = await db.execute("PRAGMA table_info(campaigns)");
-      const hasUserId = columns.rows.some((col) => col.name === "userId");
-      if (!hasUserId) {
-        await db.execute("ALTER TABLE campaigns ADD COLUMN userId INTEGER");
-        console.log("Migration: Added userId column to campaigns table.");
+      await db.execute("ALTER TABLE campaigns ADD COLUMN userId INTEGER");
+      console.log("Migration: Added userId column to campaigns table.");
+    } catch (err: any) {
+      // Silence duplicate column error if column already exists
+      const errMsg = err.message || "";
+      if (!errMsg.includes("duplicate column name") && !errMsg.includes("already exists")) {
+        console.error("Campaigns userId column migration failed:", err);
       }
-    } catch (err) {
-      console.error("Migration failed:", err);
+    }
+
+    // Migration: Check if users table lacks role column
+    try {
+      await db.execute("ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'user'");
+      console.log("Migration: Added role column to users table.");
+    } catch (err: any) {
+      // Silence duplicate column error if column already exists
+      const errMsg = err.message || "";
+      if (!errMsg.includes("duplicate column name") && !errMsg.includes("already exists")) {
+        console.error("Users role column migration failed:", err);
+      }
     }
 
     // Seed default admin user if users table is empty
@@ -79,10 +92,13 @@ export async function initDb() {
       const hashedPassword = hashPassword(defaultPassword);
       
       await db.execute({
-        sql: "INSERT INTO users (username, password) VALUES (?, ?)",
+        sql: "INSERT INTO users (username, password, role) VALUES (?, ?, 'admin')",
         args: [defaultUsername, hashedPassword]
       });
       console.log("Seeded default admin user successfully.");
+    } else {
+      // Enforce admin role on the default 'admin' account
+      await db.execute("UPDATE users SET role = 'admin' WHERE username = 'admin'");
     }
   } catch (error) {
     console.error("Database schema initialization failed:", error);
