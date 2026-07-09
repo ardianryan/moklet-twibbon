@@ -1,27 +1,42 @@
-"use client";
+import { notFound, redirect } from "next/navigation";
+import db from "@/lib/db";
 
-import { Props } from "@/hooks/useValidateFrameUrl";
-import { notFound, useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import LoadingOverlay from "../go/_components/form/loading-overlay";
+interface PageProps {
+  params: {
+    slug: string;
+  };
+}
 
-export default function SlugPage() {
-  const [isNotFound, setIsNotFound] = useState(false);
-  const { slug } = useParams();
-  const router = useRouter();
+export default async function SlugPage({ params }: PageProps) {
+  const { slug } = params;
 
-  useEffect(() => {
-    const params = localStorage.getItem(slug as string);
+  // Clean slug format
+  const cleanedSlug = slug.toLowerCase().trim();
 
-    if (!params) setIsNotFound(true);
-    else {
-      const searchParams = JSON.parse(params) as Props["searchParams"];
+  // Query database for campaign
+  const result = await db.execute({
+    sql: "SELECT title, frameUrl, caption FROM campaigns WHERE slug = ?",
+    args: [cleanedSlug]
+  });
+  
+  const campaign = result.rows[0] as unknown as {
+    title: string;
+    frameUrl: string;
+    caption: string;
+  } | undefined;
 
-      router.push(`/go?${new URLSearchParams(searchParams).toString()}`);
-    }
+  if (!campaign) {
+    notFound();
+  }
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [slug]);
+  // Construct URL parameters
+  const queryParams = new URLSearchParams({
+    title: campaign.title,
+    frameUrl: campaign.frameUrl,
+    caption: campaign.caption || "",
+    slug: cleanedSlug,
+  });
 
-  return isNotFound ? notFound() : <LoadingOverlay isLoading />;
+  // Redirect to editor
+  redirect(`/go?${queryParams.toString()}`);
 }

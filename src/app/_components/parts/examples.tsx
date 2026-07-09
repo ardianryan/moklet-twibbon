@@ -4,19 +4,19 @@ import { useMemo, useState } from "react";
 
 const EXAMPLES = [
   {
-    title: "Movaganza",
-    category: "Memo",
+    title: "HUT RI ke-80",
+    category: "Nasional",
     image: "/examples/Example Twibbon 1.jpg",
   },
   {
-    title: "MPLS 2024",
-    category: "OSIS",
-    image: "/examples/Example Twibbon 2.jpg",
+    title: "Hari Pramuka ke-64",
+    category: "Pramuka",
+    image: "/examples/Example Twibbon 2.png",
   },
   {
-    title: "MOYI",
-    category: "METIC",
-    image: "/examples/Example Twibbon 3.jpg",
+    title: "Idul Fitri 1447H",
+    category: "Keagamaan",
+    image: "/examples/Example Twibbon 3.png",
   },
 ];
 

@@ -236,7 +236,7 @@ const TwibbonFormContent = ({ searchParams }: Readonly<{ searchParams: Props["se
     try {
       const data = canvasHook.toDataUrl();
       if (data) {
-        downloadURI(data, `Twibbon ${searchParams?.title ?? "Moklet"}.jpg`);
+        downloadURI(data, `Twibbon ${searchParams?.title ?? "Smansage"}.jpg`);
         toast.success("Image downloaded successfully!");
       } else {
         toast.error("Failed to download. Please try again.");
@@ -265,11 +265,11 @@ const TwibbonFormContent = ({ searchParams }: Readonly<{ searchParams: Props["se
 
       const response = await fetch(imageData);
       const blob = await response.blob();
-      const imageFile = new File([blob], `Twibbon ${searchParams?.title ?? "Moklet"}.jpg`, { type: "image/jpeg" });
+      const imageFile = new File([blob], `Twibbon ${searchParams?.title ?? "Smansage"}.jpg`, { type: "image/jpeg" });
 
       const shareData: ShareData = {
         files: [imageFile],
-        title: `Twibbon ${searchParams?.title ?? "Moklet"}`,
+        title: `Twibbon ${searchParams?.title ?? "Smansage"}`,
       };
 
       if (searchParams?.caption) {
