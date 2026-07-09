@@ -171,7 +171,7 @@ export const Hero = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
             >
-              <span className="text-primary-500">Moklet Twibbon</span>
+              <span className="text-primary-500">Smansage Twibbon</span>
               <span className="block mt-1">
                 Create Free Campaigns Without Watermarks
               </span>
@@ -187,10 +187,10 @@ export const Hero = () => {
               Powered by{" "}
               <Link
                 target="_blank"
-                href="https://dev.moklet.org/"
+                href="#"
                 className="text-primary-500 font-medium hover:underline"
               >
-                Moklet Developers
+                Smansage Developers
               </Link>
               .
             </motion.p>

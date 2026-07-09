@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
+import { Header } from "./_components/header";
 import SonnerWrapper from "./_components/sonner-wrapper";
 import "./globals.css";
 
@@ -7,19 +8,18 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: {
-    default: "Moklet Twibbon - Create Custom Twibbons Without Watermarks",
-    template: "%s | Moklet Twibbon",
+    default: "Smansage Twibbon - Create Custom Twibbons Without Watermarks",
+    template: "%s | Smansage Twibbon",
   },
   description:
-    "Create and share custom twibbons without watermarks. A fast, simple twibbon campaign platform designed for SMK Telkom Malang (Moklet) community and beyond.",
-  creator: "MokletDev Team",
+    "Create and share custom twibbons without watermarks. A fast, simple twibbon campaign platform designed for the Smansage community and beyond.",
+  creator: "Smansage Dev Team",
   keywords: [
     "twibbon",
     "twibbon maker",
     "twibbon generator",
-    "SMK Telkom Malang",
-    "Moklet",
-    "Malang",
+    "Smansage",
+    "SMAN 1 Sooko",
     "photo frame",
     "profile picture",
     "free twibbon",
@@ -31,9 +31,9 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
-  authors: [{ name: "MokletDev Team" }],
+  authors: [{ name: "Smansage Dev Team" }],
   alternates: {
-    canonical: "https://twibbon.moklet.org/",
+    canonical: "https://twibbon.smansage.org/",
   },
   category: "technology",
 };
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#B73636",
+  themeColor: "#52815C",
 };
 
 export default function RootLayout({
@@ -53,6 +53,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <SonnerWrapper />
+        <Header />
         {children}
       </body>
     </html>

@@ -1,5 +1,5 @@
 {
-  "name": "twibbon.moklet.org",
+  "name": "twibbon.smansage.org",
   "version": "0.2.0",
   "private": true,
   "scripts": {
@@ -9,6 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1083.0",
+    "@libsql/client": "^0.17.4",
+    "better-sqlite3": "^12.11.1",
     "class-variance-authority": "^0.7.0",
     "clipboard": "^2.0.11",
     "fabric": "^6.0.2",
@@ -23,6 +26,7 @@
     "tailwind-merge": "^2.3.0"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

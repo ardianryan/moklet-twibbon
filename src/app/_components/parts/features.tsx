@@ -115,7 +115,7 @@ export const Features = () => {
             transition={{ delay: 0.3, duration: 0.5 }}
             viewport={{ once: true }}
           >
-            Why Choose Moklet Twibbon
+            Why Choose Smansage Twibbon
           </motion.h2>
 
           <motion.p
